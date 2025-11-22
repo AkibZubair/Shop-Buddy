@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sales Records - StoreBuddy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="center-page">
+    <div class="card page-card">
+      <div class="page-header">
+        <h2 class="page-title">Sales Records</h2>
+        <button class="btn secondary small" onclick="location.href='dashboard.html'">
+          Back to Dashboard
+        </button>
+      </div>
+      <p class="text-muted">
+        Select a date to see all sales made on that day, or search directly by Sale ID (shown on receipts).
+      </p>
+
+      <!-- Search by date -->
+      <div class="toolbar" style="margin-top:12px;">
+        <input id="dateInput" type="date">
+        <button id="loadBtn" class="btn small">Load records by date</button>
+      </div>
+
+      <p class="text-muted" style="margin-top:8px;">Or search by Sale ID:</p>
+      <div class="toolbar" style="margin-top:4px;">
+        <input id="saleIdInput" type="text" placeholder="Enter Sale ID from receipt">
+        <button id="searchIdBtn" class="btn small">Search by ID</button>
+      </div>
+
+      <div class="list" id="salesList" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Your scripts -->
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sales.js"></script>
+</body>
+</html>

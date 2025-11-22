@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sell - StoreBuddy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Teachable Machine image library -->
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+  <div class="center-page">
+    <div class="card page-card">
+      <div class="page-header">
+        <h2 class="page-title">Sell Products</h2>
+        <button class="btn secondary small" onclick="location.href='dashboard.html'">
+          Back to Dashboard
+        </button>
+      </div>
+      <p class="text-muted">
+        Select products to add them to the cart. You can adjust quantities before saving the sale.
+      </p>
+
+      <!-- Toolbar: search + scan -->
+      <div class="toolbar" style="margin-top:12px;">
+        <input id="sellSearchInput" type="text" placeholder="Search product by name">
+        <button id="scanBtn" class="btn small">📷 Scan product</button>
+      </div>
+
+      <!-- Hidden camera/file input used by Scan -->
+      <input
+        type="file"
+        id="cameraInput"
+        accept="image/*"
+        capture="environment"
+        style="display:none;"
+      >
+
+      <!-- Low stock summary -->
+      <p id="sellLowStockSummary" class="text-warning"></p>
+
+      <!-- Product table -->
+      <div class="table-container">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price (tk)</th>
+              <th>In Stock</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sellProductTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Cart -->
+      <h3 style="margin-top:16px;">Cart</h3>
+      <p class="text-muted">Items you are about to sell.</p>
+      <div class="list" id="cartList"></div>
+      <p id="totalPrice" style="margin-top:8px;font-weight:600;">Total: 0</p>
+
+      <div class="toolbar" style="margin-top:8px;">
+        <button id="checkoutBtn" class="btn btn-primary full-width">
+          Checkout (Save Sale &amp; PDF)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- jsPDF for PDF receipts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Your scripts -->
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sell.js"></script>
+</body>
+</html>

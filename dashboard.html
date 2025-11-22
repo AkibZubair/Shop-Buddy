@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - StoreBuddy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="center-page">
+    <div class="card page-card dashboard-card">
+      <h2 class="page-title" style="text-align:center;margin-bottom:4px;">Dashboard</h2>
+      <p class="text-muted" style="text-align:center;margin-bottom:16px;">
+        Choose what you want to do.
+      </p>
+
+      <div class="dashboard-grid">
+        <button class="btn dashboard-btn" onclick="location.href='inventory.html'">
+          Manage Inventory
+        </button>
+        <button class="btn dashboard-btn" onclick="location.href='sell.html'">
+          Sell Products
+        </button>
+        <button class="btn dashboard-btn" onclick="location.href='sales.html'">
+          Sales Records
+        </button>
+      </div>
+
+      <button class="btn danger full-width logout-btn" onclick="logout()">
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

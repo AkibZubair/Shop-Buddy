@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - StoreBuddy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="center-page">
+    <div class="card auth-card">
+      <div class="auth-shell">
+        <!-- LEFT: form -->
+        <div class="auth-main">
+          <h1 class="auth-title">Log in</h1>
+          <p class="auth-sub">
+            Enter your email and password to open your StoreBuddy dashboard.
+          </p>
+
+          <form class="auth-form" onsubmit="return false;">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" required>
+
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="Enter your password" required>
+
+            <button id="loginBtn" type="button" class="btn primary full-width">
+              Log in
+            </button>
+          </form>
+
+          <p id="message" class="text-warning" style="margin-top:8px;"></p>
+
+          <div class="auth-links">
+            <span>Don’t have an account? <a href="register.html">Register</a>.</span>
+            <a href="index.html">← Back to home</a>
+          </div>
+        </div>
+
+        <!-- RIGHT: illustration -->
+        <div class="auth-illustration-panel">
+          <div class="auth-illustration-inner">
+            <img
+              src="images/login-illustration.png"
+              alt="Shop owner using StoreBuddy"
+              class="auth-illustration-img"
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Your scripts -->
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
