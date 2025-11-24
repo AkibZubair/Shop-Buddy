@@ -204,14 +204,16 @@ function renderCart() {
 }
 
 /* ============================
-   TEACHABLE MACHINE MODEL
+   TEACHABLE MACHINE MODEL + SCAN
    ============================ */
-// Folder where model.json, metadata.json, weights.bin will live
+
+// Folder where model.json, metadata.json, weights.bin live (relative to sell.html)
 const TM_MODEL_URL = "model/";
 
-let tmModel;
-let tmMaxPredictions;
+let tmModel = null;
+let tmMaxPredictions = 0;
 
+// Load Teachable Machine model
 async function loadTMModel() {
   try {
     const modelURL = TM_MODEL_URL + "model.json";
@@ -225,15 +227,19 @@ async function loadTMModel() {
   }
 }
 
-// Start loading model as soon as page loads
-if (window.tmImage) {
-  loadTMModel();
-}
+// Ensure we only start loading once page + scripts are ready
+window.addEventListener('load', function () {
+  if (window.tmImage) {
+    loadTMModel();
+  } else {
+    console.error("tmImage library not found.");
+  }
+});
 
 /* Identify product name from base64 image using TM model */
 async function identifyProduct(imageBase64) {
   if (!tmModel) {
-    alert("Model is not loaded yet. Please wait a moment and try again.");
+    alert("Model is not loaded yet. Please wait a few seconds and try again.");
     return null;
   }
 
@@ -241,7 +247,7 @@ async function identifyProduct(imageBase64) {
   const img = new Image();
   img.src = "data:image/jpeg;base64," + imageBase64;
 
-  await new Promise(resolve => {
+  await new Promise(function (resolve) {
     img.onload = resolve;
   });
 
@@ -249,26 +255,26 @@ async function identifyProduct(imageBase64) {
   const prediction = await tmModel.predict(img);
 
   // Sort by probability descending
-  prediction.sort((a, b) => b.probability - a.probability);
+  prediction.sort(function (a, b) {
+    return b.probability - a.probability;
+  });
 
   const best = prediction[0];
   console.log("TM prediction:", prediction);
 
   // If probability is too low, consider it unknown
-  if (best.probability < 0.6) {
+  if (!best || best.probability < 0.4) {
     return null;
   }
 
-  return best.className; // This should match your inventory product name
+  return best.className; // This should match (or be contained in) your inventory product name
 }
 
-/* ============================
-   SCAN BUTTON: CAMERA / GALLERY
-   ============================ */
+/* Hook up Scan button and hidden file input */
 if (scanBtn && cameraInput) {
   scanBtn.addEventListener('click', function () {
-    cameraInput.value = ''; // reset
-    cameraInput.click();
+    cameraInput.value = ""; // reset
+    cameraInput.click();    // open camera/gallery
   });
 
   cameraInput.addEventListener('change', function () {
@@ -282,7 +288,7 @@ if (scanBtn && cameraInput) {
       var productName = await identifyProduct(base64);
 
       if (!productName) {
-        alert('Could not recognize product. Try a clearer picture or re-train the model.');
+        alert('Could not recognize product. Try a clearer picture or retrain the model.');
         return;
       }
 
@@ -293,8 +299,8 @@ if (scanBtn && cameraInput) {
         return p.name.toLowerCase() === lower;
       });
 
+      // If no exact match, try "contains"
       if (!found) {
-        // fallback: contains
         found = products.find(function (p) {
           return p.name.toLowerCase().includes(lower);
         });
