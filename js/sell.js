@@ -210,26 +210,37 @@ function renderCart() {
 // Folder where model.json, metadata.json, weights.bin live (relative to sell.html)
 const TM_MODEL_URL = "model/";
 let tmModel = null;
-let tmMaxPredictions = 0;
-let tmModelPromise = null; // track loading once
+let tmModelLoaded = false;
+let tmModelLoading = null;
 
-async function loadTMModel() {
-  try {
-    const modelURL = TM_MODEL_URL + "model.json";
-    const metadataURL = TM_MODEL_URL + "metadata.json";
-
-    tmModel = await tmImage.load(modelURL, metadataURL);
-    tmMaxPredictions = tmModel.getTotalClasses();
-    console.log("Teachable Machine model loaded. Classes:", tmMaxPredictions);
-  } catch (e) {
-    console.error("Error loading TM model:", e);
+// Load model once
+async function ensureTMModel() {
+  if (tmModelLoaded && tmModel) return;
+  if (tmModelLoading) {
+    await tmModelLoading;
+    return;
   }
+
+  tmModelLoading = (async function () {
+    try {
+      const modelURL = TM_MODEL_URL + "model.json";
+      const metadataURL = TM_MODEL_URL + "metadata.json";
+
+      tmModel = await tmImage.load(modelURL, metadataURL);
+      tmModelLoaded = true;
+      console.log("Teachable Machine model loaded.");
+    } catch (e) {
+      console.error("Error loading TM model:", e);
+    }
+  })();
+
+  await tmModelLoading;
 }
 
 // Start loading as soon as page is ready
 window.addEventListener('load', function () {
   if (window.tmImage) {
-    tmModelPromise = loadTMModel();
+    ensureTMModel();
   } else {
     console.error("tmImage library not found.");
   }
@@ -237,13 +248,13 @@ window.addEventListener('load', function () {
 
 /* Identify product name from base64 image using TM model */
 async function identifyProduct(imageBase64) {
-  // If not loaded yet but loading started, wait for it
-  if (!tmModel && tmModelPromise) {
-    await tmModelPromise;
+  // Make sure model is loaded (or try to load it)
+  if (!tmModel) {
+    await ensureTMModel();
   }
 
   if (!tmModel) {
-    alert("Model is not loaded yet. Please wait a few seconds and try again.");
+    alert("Model is not loaded yet. Please wait a moment and try again.");
     return null;
   }
 
@@ -263,7 +274,7 @@ async function identifyProduct(imageBase64) {
   const best = prediction[0];
   console.log("TM prediction:", prediction);
 
-  // Make it a bit easier to pass
+  // Easier threshold
   if (!best || best.probability < 0.3) {
     return null;
   }
