@@ -19,7 +19,7 @@ var cart = [];       // items being sold
    AUTH → LOAD PRODUCTS
    ============================ */
 auth.onAuthStateChanged(function (user) {
-  if (!user) return; // auth.js already redirects if needed
+  if (!user) return; // auth.js redirects if not logged in
   currentUserId = user.uid;
   listenForProducts();
 });
@@ -209,11 +209,10 @@ function renderCart() {
 
 // Folder where model.json, metadata.json, weights.bin live (relative to sell.html)
 const TM_MODEL_URL = "model/";
-
 let tmModel = null;
 let tmMaxPredictions = 0;
+let tmModelPromise = null; // track loading once
 
-// Load Teachable Machine model
 async function loadTMModel() {
   try {
     const modelURL = TM_MODEL_URL + "model.json";
@@ -227,10 +226,10 @@ async function loadTMModel() {
   }
 }
 
-// Ensure we only start loading once page + scripts are ready
+// Start loading as soon as page is ready
 window.addEventListener('load', function () {
   if (window.tmImage) {
-    loadTMModel();
+    tmModelPromise = loadTMModel();
   } else {
     console.error("tmImage library not found.");
   }
@@ -238,12 +237,16 @@ window.addEventListener('load', function () {
 
 /* Identify product name from base64 image using TM model */
 async function identifyProduct(imageBase64) {
+  // If not loaded yet but loading started, wait for it
+  if (!tmModel && tmModelPromise) {
+    await tmModelPromise;
+  }
+
   if (!tmModel) {
     alert("Model is not loaded yet. Please wait a few seconds and try again.");
     return null;
   }
 
-  // Convert base64 → Image element
   const img = new Image();
   img.src = "data:image/jpeg;base64," + imageBase64;
 
@@ -251,10 +254,8 @@ async function identifyProduct(imageBase64) {
     img.onload = resolve;
   });
 
-  // Predict
   const prediction = await tmModel.predict(img);
 
-  // Sort by probability descending
   prediction.sort(function (a, b) {
     return b.probability - a.probability;
   });
@@ -262,19 +263,19 @@ async function identifyProduct(imageBase64) {
   const best = prediction[0];
   console.log("TM prediction:", prediction);
 
-  // If probability is too low, consider it unknown
-  if (!best || best.probability < 0.4) {
+  // Make it a bit easier to pass
+  if (!best || best.probability < 0.3) {
     return null;
   }
 
-  return best.className; // This should match (or be contained in) your inventory product name
+  return best.className;
 }
 
 /* Hook up Scan button and hidden file input */
 if (scanBtn && cameraInput) {
   scanBtn.addEventListener('click', function () {
-    cameraInput.value = ""; // reset
-    cameraInput.click();    // open camera/gallery
+    cameraInput.value = "";
+    cameraInput.click();    // open camera / gallery
   });
 
   cameraInput.addEventListener('change', function () {
